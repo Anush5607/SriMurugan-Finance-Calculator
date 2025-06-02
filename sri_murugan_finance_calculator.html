@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRI MURUGAN FINANCE - Interest Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.2em;
+        }
+
+        .calc-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .calc-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .calc-panel:hover {
+            transform: translateY(-5px);
+        }
+
+        .calc-panel h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #34495e;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .result.hidden {
+            display: none;
+        }
+
+        .result-details {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-details.hidden {
+            display: none;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #27ae60;
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            background: #ecf0f1;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .tab.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .tab:hover {
+            background: #3498db;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .calc-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+        }
+
+        .footer {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 15px;
+            color: #7f8c8d;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>SRI MURUGAN FINANCE</h1>
+            <p>Professional Interest Calculator for Finance Professionals</p>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('simple')">Simple Interest</div>
+            <div class="tab" onclick="showTab('compound')">Compound Interest</div>
+            <div class="tab" onclick="showTab('emi')">EMI Calculator</div>
+        </div>
+
+        <!-- Simple Interest Calculator -->
+        <div id="simple-tab" class="calc-container">
+            <div class="calc-panel">
+                <h2>Simple Interest Calculator</h2>
+                <div class="form-group">
+                    <label for="si-principal">Principal Amount (₹)</label>
+                    <input type="number" id="si-principal" placeholder="Enter principal amount" min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="si-rate">Annual Interest Rate (%)</label>
+                    <input type="number" id="si-rate" placeholder="Enter interest rate" min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="si-time">Time Period</label>
+                    <input type="number" id="si-time" placeholder="Enter time period" min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="si-time-unit">Time Unit</label>
+                    <select id="si-time-unit">
+                        <option value="years">Years</option>
+                        <option value="months">Months</option>
+                        <option value="days">Days</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="calculateSimpleInterest()">Calculate Simple Interest</button>
+                
+                <div id="si-result" class="result hidden"></div>
+                <div id="si-details" class="result-details hidden"></div>
+            </div>
+
+            <div class="calc-panel">
+                <h2>Quick Interest Rate Finder</h2>
+                <div class="form-group">
+                    <label for="rate-principal">Principal (₹)</label>
+                    <input type="number" id="rate-principal" placeholder="Enter principal" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="rate-interest">Interest Earned (₹)</label>
+                    <input type="number" id="rate-interest" placeholder="Enter interest earned" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="rate-time">Time (Years)</label>
+                    <input type="number" id="rate-time" placeholder="Enter time in years" min="0">
+                </div>
+                <button class="btn" onclick="findInterestRate()">Find Interest Rate</button>
+                
+                <div id="rate-result" class="result hidden"></div>
+            </div>
+        </div>
+
+        <!-- Compound Interest Calculator -->
+        <div id="compound-tab" class="calc-container hidden">
+            <div class="calc-panel">
+                <h2>Compound Interest Calculator</h2>
+                <div class="form-group">
+                    <label for="ci-principal">Principal Amount (₹)</label>
+                    <input type="number" id="ci-principal" placeholder="Enter principal amount" min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="ci-rate">Annual Interest Rate (%)</label>
+                    <input type="number" id="ci-rate" placeholder="Enter interest rate" min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="ci-time">Time Period (Years)</label>
+                    <input type="number" id="ci-time" placeholder="Enter time in years" min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="ci-frequency">Compounding Frequency</label>
+                    <select id="ci-frequency">
+                        <option value="1">Annually</option>
+                        <option value="4">Quarterly</option>
+                        <option value="12">Monthly</option>
+                        <option value="365">Daily</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="calculateCompoundInterest()">Calculate Compound Interest</button>
+                
+                <div id="ci-result" class="result hidden"></div>
+                <div id="ci-details" class="result-details hidden"></div>
+            </div>
+
+            <div class="calc-panel">
+                <h2>Investment Growth Projection</h2>
+                <div class="form-group">
+                    <label for="growth-initial">Initial Investment (₹)</label>
+                    <input type="number" id="growth-initial" placeholder="Enter initial amount" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="growth-monthly">Monthly Addition (₹)</label>
+                    <input type="number" id="growth-monthly" placeholder="Monthly investment" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="growth-rate">Expected Annual Return (%)</label>
+                    <input type="number" id="growth-rate" placeholder="Expected return rate" min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="growth-years">Investment Period (Years)</label>
+                    <input type="number" id="growth-years" placeholder="Investment duration" min="0">
+                </div>
+                <button class="btn" onclick="calculateGrowthProjection()">Project Growth</button>
+                
+                <div id="growth-result" class="result hidden"></div>
+            </div>
+        </div>
+
+        <!-- EMI Calculator -->
+        <div id="emi-tab" class="calc-container hidden">
+            <div class="calc-panel">
+                <h2>EMI Calculator</h2>
+                <div class="form-group">
+                    <label for="emi-principal">Loan Amount (₹)</label>
+                    <input type="number" id="emi-principal" placeholder="Enter loan amount" min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="emi-rate">Annual Interest Rate (%)</label>
+                    <input type="number" id="emi-rate" placeholder="Enter interest rate" min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="emi-tenure">Loan Tenure</label>
+                    <input type="number" id="emi-tenure" placeholder="Enter tenure" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="emi-tenure-unit">Tenure Unit</label>
+                    <select id="emi-tenure-unit">
+                        <option value="months">Months</option>
+                        <option value="years">Years</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="calculateEMI()">Calculate EMI</button>
+                
+                <div id="emi-result" class="result hidden"></div>
+                <div id="emi-details" class="result-details hidden"></div>
+            </div>
+
+            <div class="calc-panel">
+                <h2>Loan Affordability Calculator</h2>
+                <div class="form-group">
+                    <label for="afford-income">Monthly Income (₹)</label>
+                    <input type="number" id="afford-income" placeholder="Enter monthly income" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="afford-expenses">Monthly Expenses (₹)</label>
+                    <input type="number" id="afford-expenses" placeholder="Enter monthly expenses" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="afford-rate">Interest Rate (%)</label>
+                    <input type="number" id="afford-rate" placeholder="Enter interest rate" min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="afford-tenure">Loan Tenure (Years)</label>
+                    <input type="number" id="afford-tenure" placeholder="Enter tenure in years" min="0">
+                </div>
+                <button class="btn" onclick="calculateAffordability()">Check Affordability</button>
+                
+                <div id="afford-result" class="result hidden"></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2024 SRI MURUGAN FINANCE - Professional Financial Calculations Made Easy</p>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching functionality
+        function showTab(tabName) {
+            // Hide all tabs
+            document.getElementById('simple-tab').classList.add('hidden');
+            document.getElementById('compound-tab').classList.add('hidden');
+            document.getElementById('emi-tab').classList.add('hidden');
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab and mark as active
+            document.getElementById(tabName + '-tab').classList.remove('hidden');
+            event.target.classList.add('active');
+        }
+
+        // Simple Interest Calculator
+        function calculateSimpleInterest() {
+            const principal = parseFloat(document.getElementById('si-principal').value);
+            const rate = parseFloat(document.getElementById('si-rate').value);
+            const time = parseFloat(document.getElementById('si-time').value);
+            const timeUnit = document.getElementById('si-time-unit').value;
+            
+            if (!principal || !rate || !time) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            let timeInYears = time;
+            if (timeUnit === 'months') {
+                timeInYears = time / 12;
+            } else if (timeUnit === 'days') {
+                timeInYears = time / 365;
+            }
+            
+            const simpleInterest = (principal * rate * timeInYears) / 100;
+            const totalAmount = principal + simpleInterest;
+            
+            document.getElementById('si-result').textContent = 
+                `Interest: ₹${simpleInterest.toFixed(2)} | Total: ₹${totalAmount.toFixed(2)}`;
+            document.getElementById('si-result').classList.remove('hidden');
+            
+            // Show detailed breakdown
+            const details = document.getElementById('si-details');
+            details.innerHTML = `
+                <div class="result-row">
+                    <span>Principal Amount:</span>
+                    <span>₹${principal.toFixed(2)}</span>
+                </div>
+                <div class="result-row">
+                    <span>Interest Rate:</span>
+                    <span>${rate}% per annum</span>
+                </div>
+                <div class="result-row">
+                    <span>Time Period:</span>
+                    <span>${time} ${timeUnit}</span>
+                </div>
+                <div class="result-row">
+                    <span>Simple Interest:</span>
+                    <span>₹${simpleInterest.toFixed(2)}</span>
+                </div>
+                <div class="result-row">
+                    <span>Total Amount:</span>
+                    <span>₹${totalAmount.toFixed(2)}</span>
+                </div>
+            `;
+            details.classList.remove('hidden');
+        }
+
+        // Find Interest Rate
+        function findInterestRate() {
+            const principal = parseFloat(document.getElementById('rate-principal').value);
+            const interest = parseFloat(document.getElementById('rate-interest').value);
+            const time = parseFloat(document.getElementById('rate-time').value);
+            
+            if (!principal || !interest || !time) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            const rate = (interest * 100) / (principal * time);
+            
+            document.getElementById('rate-result').textContent = 
+                `Required Interest Rate: ${rate.toFixed(2)}% per annum`;
+            document.getElementById('rate-result').classList.remove('hidden');
+        }
+
+        // Compound Interest Calculator
+        function calculateCompoundInterest() {
+            const principal = parseFloat(document.getElementById('ci-principal').value);
+            const rate = parseFloat(document.getElementById('ci-rate').value);
+            const time = parseFloat(document.getElementById('ci-time').value);
+            const frequency = parseInt(document.getElementById('ci-frequency').value);
+            
+            if (!principal || !rate || !time) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            const amount = principal * Math.pow((1 + (rate / 100) / frequency), frequency * time);
+            const compoundInterest = amount - principal;
+            
+            document.getElementById('ci-result').textContent = 
+                `Compound Interest: ₹${compoundInterest.toFixed(2)} | Maturity: ₹${amount.toFixed(2)}`;
+            document.getElementById('ci-result').classList.remove('hidden');
+            
+            // Show detailed breakdown
+            const details = document.getElementById('ci-details');
+            const frequencyText = {1: 'Annually', 4: 'Quarterly', 12: 'Monthly', 365: 'Daily'};
+            
+            details.innerHTML = `
+                <div class="result-row">
+                    <span>Principal Amount:</span>
+                    <span>₹${principal.toFixed(2)}</span>
+                </div>
+                <div class="result-row">
+                    <span>Interest Rate:</span>
+                    <span>${rate}% per annum</span>
+                </div>
+                <div class="result-row">
+                    <span>Time Period:</span>
+                    <span>${time} years</span>
+                </div>
+                <div class="result-row">
+                    <span>Compounding:</span>
+                    <span>${frequencyText[frequency]}</span>
+                </div>
+                <div class="result-row">
+                    <span>Compound Interest:</span>
+                    <span>₹${compoundInterest.toFixed(2)}</span>
+                </div>
+                <div class="result-row">
+                    <span>Maturity Amount:</span>
+                    <span>₹${amount.toFixed(2)}</span>
+                </div>
+            `;
+            details.classList.remove('hidden');
+        }
+
+        // Investment Growth Projection
+        function calculateGrowthProjection() {
+            const initial = parseFloat(document.getElementById('growth-initial').value);
+            const monthly = parseFloat(document.getElementById('growth-monthly').value) || 0;
+            const rate = parseFloat(document.getElementById('growth-rate').value);
+            const years = parseFloat(document.getElementById('growth-years').value);
+            
+            if (!initial || !rate || !years) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            const monthlyRate = rate / 100 / 12;
+            const months = years * 12;
+            
+            // Calculate future value of initial investment
+            const futureInitial = initial * Math.pow(1 + monthlyRate, months);
+            
+            // Calculate future value of monthly investments (annuity)
+            let futureMonthly = 0;
+            if (monthly > 0) {
+                futureMonthly = monthly * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
+            }
+            
+            const totalInvestment = initial + (monthly * months);
+            const totalValue = futureInitial + futureMonthly;
+            const totalGain = totalValue - totalInvestment;
+            
+            document.getElementById('growth-result').innerHTML = 
+                `Investment: ₹${totalInvestment.toFixed(2)} | Final Value: ₹${totalValue.toFixed(2)} | Gain: ₹${totalGain.toFixed(2)}`;
+            document.getElementById('growth-result').classList.remove('hidden');
+        }
+
+        // EMI Calculator
+        function calculateEMI() {
+            const principal = parseFloat(document.getElementById('emi-principal').value);
+            const rate = parseFloat(document.getElementById('emi-rate').value);
+            const tenure = parseFloat(document.getElementById('emi-tenure').value);
+            const tenureUnit = document.getElementById('emi-tenure-unit').value;
+            
+            if (!principal || !rate || !tenure) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            let tenureInMonths = tenure;
+            if (tenureUnit === 'years') {
+                tenureInMonths = tenure * 12;
+            }
+            
+            const monthlyRate = rate / 100 / 12;
+            const emi = (principal * monthlyRate * Math.pow(1 + monthlyRate, tenureInMonths)) / 
+                       (Math.pow(1 + monthlyRate, tenureInMonths) - 1);
+            
+            const totalAmount = emi * tenureInMonths;
+            const totalInterest = totalAmount - principal;
+            
+            document.getElementById('emi-result').textContent = 
+                `EMI: ₹${emi.toFixed(2)} | Total Interest: ₹${totalInterest.toFixed(2)}`;
+            document.getElementById('emi-result').classList.remove('hidden');
+            
+            // Show detailed breakdown
+            const details = document.getElementById('emi-details');
+            details.innerHTML = `
+                <div class="result-row">
+                    <span>Loan Amount:</span>
+                    <span>₹${principal.toFixed(2)}</span>
+                </div>
+                <div class="result-row">
+                    <span>Interest Rate:</span>
+                    <span>${rate}% per annum</span>
+                </div>
+                <div class="result-row">
+                    <span>Tenure:</span>
+                    <span>${tenure} ${tenureUnit} (${tenureInMonths} months)</span>
+                </div>
+                <div class="result-row">
+                    <span>Monthly EMI:</span>
+                    <span>₹${emi.toFixed(2)}</span>
+                </div>
+                <div class="result-row">
+                    <span>Total Interest:</span>
+                    <span>₹${totalInterest.toFixed(2)}</span>
+                </div>
+                <div class="result-row">
+                    <span>Total Payment:</span>
+                    <span>₹${totalAmount.toFixed(2)}</span>
+                </div>
+            `;
+            details.classList.remove('hidden');
+        }
+
+        // Loan Affordability Calculator
+        function calculateAffordability() {
+            const income = parseFloat(document.getElementById('afford-income').value);
+            const expenses = parseFloat(document.getElementById('afford-expenses').value);
+            const rate = parseFloat(document.getElementById('afford-rate').value);
+            const tenure = parseFloat(document.getElementById('afford-tenure').value);
+            
+            if (!income || !expenses || !rate || !tenure) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            const availableIncome = income - expenses;
+            const maxEMI = availableIncome * 0.5; // 50% of available income
+            
+            const monthlyRate = rate / 100 / 12;
+            const tenureInMonths = tenure * 12;
+            
+            const maxLoanAmount = (maxEMI * (Math.pow(1 + monthlyRate, tenureInMonths) - 1)) / 
+                                 (monthlyRate * Math.pow(1 + monthlyRate, tenureInMonths));
+            
+            document.getElementById('afford-result').innerHTML = 
+                `Available Income: ₹${availableIncome.toFixed(2)}<br>Max EMI: ₹${maxEMI.toFixed(2)}<br>Max Loan: ₹${maxLoanAmount.toFixed(2)}`;
+            document.getElementById('afford-result').classList.remove('hidden');
+        }
+
+        // Add input event listeners for real-time formatting
+        const numberInputs = document.querySelectorAll('input[type="number"]');
+        numberInputs.forEach(input => {
+            input.addEventListener('input', function() {
+                if (this.value < 0) {
+                    this.value = 0;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
